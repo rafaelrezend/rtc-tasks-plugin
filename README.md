@@ -1,3 +1,3 @@
 # rtc-tasks-plugin
 
-Temporary repository
+Ant-based Team Concert plugin

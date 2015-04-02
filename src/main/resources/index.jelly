@@ -1,0 +1,3 @@
+<div>
+  A buildstep wrapping any number of other buildsteps, controlling their execution based on a defined condition (e.g. BuildParameter). 
+</div>

@@ -1,0 +1,19 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+	<f:entry title="${%Build Definition}" field="buildDefinitionId"
+        description="Build Definition where the Build Result belongs to.">
+        <f:textbox />
+    </f:entry>
+    
+    <f:entry title="${%Build Engine}" field="engineId"
+        description="Build Engine that serves the Build Definition above.">
+        <f:textbox />
+    </f:entry>
+    
+    <f:entry title="${%Build Result ID property}" field="resultUUIDProperty"
+        description="Property that holds the Build Result UUID. It can be referenced throughout the build as, for instance, ${MY_PROPERTY}.">
+        <f:textbox />
+    </f:entry>
+
+
+</j:jelly>

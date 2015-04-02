@@ -1,0 +1,24 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+	<f:entry title="${%Label}" field="label"
+        description="Title shown in the respective Activity of the RTC Build Result.">
+        <f:textbox />
+    </f:entry>
+    
+    <f:entry title="${%Build Result ID}" field="buildResultUUID">
+        <f:textbox />
+    </f:entry>
+
+	<f:block>
+		<div style="padding-left: 6em">
+			<f:section>
+				<f:nested>
+					<f:hetero-list name="enclosedSteps" hasHeader="true" descriptors="${descriptor.getBuilderDescriptors(it)}" items="${instance.enclosedSteps}"
+						addCaption="${%Add build step}" />
+				</f:nested>
+			</f:section>
+		</div>
+	</f:block>
+
+
+</j:jelly>
