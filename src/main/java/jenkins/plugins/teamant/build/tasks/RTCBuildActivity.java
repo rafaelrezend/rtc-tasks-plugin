@@ -1,4 +1,4 @@
-package jenkins.plugins.teamant.build.rtcbuildactivity;
+package jenkins.plugins.teamant.build.tasks;
 
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
@@ -180,7 +180,7 @@ public class RTCBuildActivity extends Builder {
             shouldContinue = buildStep.perform(build, launcher, listener);
         }
 	
-	// Replace the previous action for an empty one.
+	// Replace the previous action with an empty one.
 	build.replaceAction(new RTCBuildActivityAction());
 	
 	try {

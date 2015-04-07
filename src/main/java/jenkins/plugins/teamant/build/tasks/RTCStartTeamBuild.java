@@ -1,4 +1,4 @@
-package jenkins.plugins.teamant.build.rtcteambuild;
+package jenkins.plugins.teamant.build.tasks;
 
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
@@ -39,9 +39,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * A buildstep wrapping any number of other buildsteps, controlling their execution based on a defined condition.
  *
  */
-public class RTCStartBuild extends Builder {
+public class RTCStartTeamBuild extends Builder {
     
-    private static final String PUBLISH_FILE_PREFIX = "rtcstartbuild_";
+    private static final String PUBLISH_FILE_PREFIX = "rtcstartteambuild_";
     
     private String resultUUIDProperty;
     private String buildDefinitionId;
@@ -54,7 +54,7 @@ public class RTCStartBuild extends Builder {
      * @param label RTC Build Result Activity label.
      */
     @DataBoundConstructor
-    public RTCStartBuild(String resultUUIDProperty, String buildDefinitionId, String engineId) {
+    public RTCStartTeamBuild(String resultUUIDProperty, String buildDefinitionId, String engineId) {
         this.resultUUIDProperty = resultUUIDProperty;
         this.buildDefinitionId = buildDefinitionId;
         this.engineId = engineId;
@@ -92,8 +92,6 @@ public class RTCStartBuild extends Builder {
         return engineId;
     }
 
-    
-    @SuppressWarnings("deprecation")
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
 	
@@ -111,7 +109,7 @@ public class RTCStartBuild extends Builder {
 	// Create publisher script file. It will first hold the start activity
 	// then will be overwritten with the complete activity.
 	FilePath antScriptFilePath = new FilePath(build.getWorkspace(),
-		RTCStartBuild.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
+		RTCStartTeamBuild.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
 	
 	// Write the Start activity file into the Jenkins workspace.
 	try {

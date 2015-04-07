@@ -1,4 +1,4 @@
-package jenkins.plugins.teamant.build.rtcteambuild;
+package jenkins.plugins.teamant.build.tasks;
 
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
@@ -40,9 +40,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * A buildstep wrapping any number of other buildsteps, controlling their execution based on a defined condition.
  *
  */
-public class RTCCompleteBuild extends Recorder {
+public class RTCCompleteTeamBuild extends Recorder {
     
-    private static final String PUBLISH_FILE_PREFIX = "rtccompletebuild_";
+    private static final String PUBLISH_FILE_PREFIX = "rtccompleteteambuild_";
     
     private String buildResultUUID;
     
@@ -53,7 +53,7 @@ public class RTCCompleteBuild extends Recorder {
      * @param label RTC Build Result Activity label.
      */
     @DataBoundConstructor
-    public RTCCompleteBuild(String buildResultUUID) {
+    public RTCCompleteTeamBuild(String buildResultUUID) {
         this.buildResultUUID = buildResultUUID;
     }
     
@@ -75,8 +75,6 @@ public class RTCCompleteBuild extends Recorder {
         return buildResultUUID;
     }
     
-    
-    @SuppressWarnings("deprecation")
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
 	
@@ -100,7 +98,7 @@ public class RTCCompleteBuild extends Recorder {
 	// Create publisher script file. It will first hold the start activity
 	// then will be overwritten with the complete activity.
 	FilePath antScriptFilePath = new FilePath(build.getWorkspace(),
-		RTCCompleteBuild.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
+		RTCCompleteTeamBuild.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
 	
 	String resolvedBuildResultUUID = "";
 	

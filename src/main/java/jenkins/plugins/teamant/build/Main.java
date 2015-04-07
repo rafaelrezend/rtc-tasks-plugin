@@ -1,4 +1,4 @@
-package jenkins.plugins.teamant.build.rtcbuildactivity;
+package jenkins.plugins.teamant.build;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
