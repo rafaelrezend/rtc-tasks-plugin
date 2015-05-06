@@ -33,7 +33,7 @@ public class StartBuildActivityTask extends BaseTask {
      */
     @Override
     public String getTaskDefName() {
-	return "startBuildActivity";
+    	return "startBuildActivity";
     }
 
     /** 
@@ -41,7 +41,7 @@ public class StartBuildActivityTask extends BaseTask {
      */
     @Override
     public String getTaskDefClassname() {
-	return "com.ibm.team.build.ant.task.StartBuildActivityTask";
+    	return "com.ibm.team.build.ant.task.StartBuildActivityTask";
     }
 
     /** 
@@ -50,23 +50,23 @@ public class StartBuildActivityTask extends BaseTask {
     @Override
     public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
 	
-	// validate required attributes
-	if (buildResultUUID == null)
-	    throw new RTCMissingAttrException(this.getClass(), "buildResultUUID");
-	if (repositoryAddress == null)
-	    throw new RTCMissingAttrException(this.getClass(), "repositoryAddress");
-	if (userId == null)
-	    throw new RTCMissingAttrException(this.getClass(), "userId");
-	if (label == null)
-	    throw new RTCMissingAttrException(this.getClass(), "label");
-	
-	// validate password and password file
-	// either of them should be provided.
-	if (password == null && passwordFile == null)
-	    throw new RTCMissingAttrException(this.getClass(), "password", "passwordFile");
-	// but not both at the same time
-	if (password != null && passwordFile != null)
-	    throw new RTCConflictAttrException(this.getClass(), "password", "passwordFile");
+		// validate required attributes
+		if (buildResultUUID == null)
+		    throw new RTCMissingAttrException(this.getClass(), "buildResultUUID");
+		if (repositoryAddress == null)
+		    throw new RTCMissingAttrException(this.getClass(), "repositoryAddress");
+		if (userId == null)
+		    throw new RTCMissingAttrException(this.getClass(), "userId");
+		if (label == null)
+		    throw new RTCMissingAttrException(this.getClass(), "label");
+		
+		// validate password and password file
+		// either of them should be provided.
+		if (password == null && passwordFile == null)
+		    throw new RTCMissingAttrException(this.getClass(), "password", "passwordFile");
+		// but not both at the same time
+		if (password != null && passwordFile != null)
+		    throw new RTCConflictAttrException(this.getClass(), "password", "passwordFile");
 	
     }
 
