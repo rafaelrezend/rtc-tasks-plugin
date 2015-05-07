@@ -9,204 +9,215 @@ import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
  *
  */
 public class CompleteBuildActivityTask extends BaseTask {
-    
-    // required fields
-    private String activityId;
-    private String buildResultUUID;
-    private String repositoryAddress;
-    private String userId;
-    
-    // non-required fields
-    private String certificateFile;
-    private String failOnError;
-    private String password;
-    private String passwordFile;
-    private String smartCard;
-    private String verbose;
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTaskDefName() {
-	return "completeBuildActivity";
-    }
+	// required fields
+	private String activityId;
+	private String buildResultUUID;
+	private String repositoryAddress;
+	private String userId;
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTaskDefClassname() {
-	return "com.ibm.team.build.ant.task.CompleteBuildActivityTask";
-    }
+	// non-required fields
+	private String certificateFile;
+	private String failOnError;
+	private String password;
+	private String passwordFile;
+	private String smartCard;
+	private String verbose;
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getTaskDefName() {
+		return "completeBuildActivity";
+	}
 
-	// validate required attributes
-	if (activityId == null)
-	    throw new RTCMissingAttrException(this.getClass(), "activityId");
-	if (buildResultUUID == null)
-	    throw new RTCMissingAttrException(this.getClass(),
-		    "buildResultUUID");
-	if (repositoryAddress == null)
-	    throw new RTCMissingAttrException(this.getClass(),
-		    "repositoryAddress");
-	if (userId == null)
-	    throw new RTCMissingAttrException(this.getClass(), "userId");
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getTaskDefClassname() {
+		return "com.ibm.team.build.ant.task.CompleteBuildActivityTask";
+	}
 
-	// validate password and password file
-	// either of them should be provided.
-	if (password == null && passwordFile == null)
-	    throw new RTCMissingAttrException(this.getClass(), "password",
-		    "passwordFile");
-	// but not both at the same time
-	if (password != null && passwordFile != null)
-	    throw new RTCConflictAttrException(this.getClass(), "password", "passwordFile");
-	
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
 
-    /**
-     * @return the activityId
-     */
-    public String getActivityId() {
-        return activityId;
-    }
+		// validate required attributes
+		if (activityId == null)
+			throw new RTCMissingAttrException(this.getClass(), "activityId");
+		if (buildResultUUID == null)
+			throw new RTCMissingAttrException(this.getClass(),
+					"buildResultUUID");
+		if (repositoryAddress == null)
+			throw new RTCMissingAttrException(this.getClass(),
+					"repositoryAddress");
+		if (userId == null)
+			throw new RTCMissingAttrException(this.getClass(), "userId");
 
-    /**
-     * @param activityId the activityId to set
-     */
-    public void setActivityId(String activityId) {
-        this.activityId = activityId;
-    }
+		// validate password and password file
+		// either of them should be provided.
+		if (password == null && passwordFile == null)
+			throw new RTCMissingAttrException(this.getClass(), "password",
+					"passwordFile");
+		// but not both at the same time
+		if (password != null && passwordFile != null)
+			throw new RTCConflictAttrException(this.getClass(), "password",
+					"passwordFile");
 
-    /**
-     * @return the buildResultUUID
-     */
-    public String getBuildResultUUID() {
-        return buildResultUUID;
-    }
+	}
 
-    /**
-     * @param buildResultUUID the buildResultUUID to set
-     */
-    public void setBuildResultUUID(String buildResultUUID) {
-        this.buildResultUUID = buildResultUUID;
-    }
+	/**
+	 * @return the activityId
+	 */
+	public String getActivityId() {
+		return activityId;
+	}
 
-    /**
-     * @return the repositoryAddress
-     */
-    public String getRepositoryAddress() {
-        return repositoryAddress;
-    }
+	/**
+	 * @param activityId
+	 *            the activityId to set
+	 */
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
 
-    /**
-     * @param repositoryAddress the repositoryAddress to set
-     */
-    public void setRepositoryAddress(String repositoryAddress) {
-        this.repositoryAddress = repositoryAddress;
-    }
+	/**
+	 * @return the buildResultUUID
+	 */
+	public String getBuildResultUUID() {
+		return buildResultUUID;
+	}
 
-    /**
-     * @return the userId
-     */
-    public String getUserId() {
-        return userId;
-    }
+	/**
+	 * @param buildResultUUID
+	 *            the buildResultUUID to set
+	 */
+	public void setBuildResultUUID(String buildResultUUID) {
+		this.buildResultUUID = buildResultUUID;
+	}
 
-    /**
-     * @param userId the userId to set
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	/**
+	 * @return the repositoryAddress
+	 */
+	public String getRepositoryAddress() {
+		return repositoryAddress;
+	}
 
-    /**
-     * @return the certificateFile
-     */
-    public String getCertificateFile() {
-        return certificateFile;
-    }
+	/**
+	 * @param repositoryAddress
+	 *            the repositoryAddress to set
+	 */
+	public void setRepositoryAddress(String repositoryAddress) {
+		this.repositoryAddress = repositoryAddress;
+	}
 
-    /**
-     * @param certificateFile the certificateFile to set
-     */
-    public void setCertificateFile(String certificateFile) {
-        this.certificateFile = certificateFile;
-    }
+	/**
+	 * @return the userId
+	 */
+	public String getUserId() {
+		return userId;
+	}
 
-    /**
-     * @return the failOnError
-     */
-    public String getFailOnError() {
-        return failOnError;
-    }
+	/**
+	 * @param userId
+	 *            the userId to set
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    /**
-     * @param failOnError the failOnError to set
-     */
-    public void setFailOnError(String failOnError) {
-        this.failOnError = failOnError;
-    }
+	/**
+	 * @return the certificateFile
+	 */
+	public String getCertificateFile() {
+		return certificateFile;
+	}
 
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
+	/**
+	 * @param certificateFile
+	 *            the certificateFile to set
+	 */
+	public void setCertificateFile(String certificateFile) {
+		this.certificateFile = certificateFile;
+	}
 
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	/**
+	 * @return the failOnError
+	 */
+	public String getFailOnError() {
+		return failOnError;
+	}
 
-    /**
-     * @return the passwordFile
-     */
-    public String getPasswordFile() {
-        return passwordFile;
-    }
+	/**
+	 * @param failOnError
+	 *            the failOnError to set
+	 */
+	public void setFailOnError(String failOnError) {
+		this.failOnError = failOnError;
+	}
 
-    /**
-     * @param passwordFile the passwordFile to set
-     */
-    public void setPasswordFile(String passwordFile) {
-        this.passwordFile = passwordFile;
-    }
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
 
-    /**
-     * @return the smartCard
-     */
-    public String getSmartCard() {
-        return smartCard;
-    }
+	/**
+	 * @param password
+	 *            the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    /**
-     * @param smartCard the smartCard to set
-     */
-    public void setSmartCard(String smartCard) {
-        this.smartCard = smartCard;
-    }
+	/**
+	 * @return the passwordFile
+	 */
+	public String getPasswordFile() {
+		return passwordFile;
+	}
 
-    /**
-     * @return the verbose
-     */
-    public String getVerbose() {
-        return verbose;
-    }
+	/**
+	 * @param passwordFile
+	 *            the passwordFile to set
+	 */
+	public void setPasswordFile(String passwordFile) {
+		this.passwordFile = passwordFile;
+	}
 
-    /**
-     * @param verbose the verbose to set
-     */
-    public void setVerbose(String verbose) {
-        this.verbose = verbose;
-    }
+	/**
+	 * @return the smartCard
+	 */
+	public String getSmartCard() {
+		return smartCard;
+	}
+
+	/**
+	 * @param smartCard
+	 *            the smartCard to set
+	 */
+	public void setSmartCard(String smartCard) {
+		this.smartCard = smartCard;
+	}
+
+	/**
+	 * @return the verbose
+	 */
+	public String getVerbose() {
+		return verbose;
+	}
+
+	/**
+	 * @param verbose
+	 *            the verbose to set
+	 */
+	public void setVerbose(String verbose) {
+		this.verbose = verbose;
+	}
 
 }

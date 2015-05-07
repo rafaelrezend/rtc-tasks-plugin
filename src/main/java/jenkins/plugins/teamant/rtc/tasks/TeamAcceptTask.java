@@ -13,11 +13,11 @@ import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
  *
  */
 public class TeamAcceptTask extends BaseTask {
-	
+
 	// required fields
 	private String repositoryAddress;
 	private String userId;
-	
+
 	// non-required fields
 	private String workspaceName;
 	private String workspaceUUID;
@@ -34,7 +34,9 @@ public class TeamAcceptTask extends BaseTask {
 	private String snapshotUUIDProperty;
 	private String verbose;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jenkins.plugins.teamant.rtc.BaseTask#getTaskDefName()
 	 */
 	@Override
@@ -42,7 +44,9 @@ public class TeamAcceptTask extends BaseTask {
 		return "teamAccept";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jenkins.plugins.teamant.rtc.BaseTask#getTaskDefClassname()
 	 */
 	@Override
@@ -50,7 +54,9 @@ public class TeamAcceptTask extends BaseTask {
 		return "com.ibm.team.build.ant.task.TeamAcceptTask";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jenkins.plugins.teamant.rtc.BaseTask#eval()
 	 */
 	@Override
@@ -58,17 +64,20 @@ public class TeamAcceptTask extends BaseTask {
 			RTCConflictAttrException, RTCDependentAttrException {
 		// validate required fields
 		if (repositoryAddress == null)
-		    throw new RTCMissingAttrException(this.getClass(), "repositoryAddress");
+			throw new RTCMissingAttrException(this.getClass(),
+					"repositoryAddress");
 		if (userId == null)
-		    throw new RTCMissingAttrException(this.getClass(), "userId");
-		
+			throw new RTCMissingAttrException(this.getClass(), "userId");
+
 		// validate password and password file
 		// either of them should be provided.
 		if (password == null && passwordFile == null)
-		    throw new RTCMissingAttrException(this.getClass(), "password", "passwordFile");
+			throw new RTCMissingAttrException(this.getClass(), "password",
+					"passwordFile");
 		// but not both at the same time
 		if (password != null && passwordFile != null)
-		    throw new RTCConflictAttrException(this.getClass(), "password", "passwordFile");
+			throw new RTCConflictAttrException(this.getClass(), "password",
+					"passwordFile");
 	}
 
 	/**
@@ -79,7 +88,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param repositoryAddress the repositoryAddress to set
+	 * @param repositoryAddress
+	 *            the repositoryAddress to set
 	 */
 	public void setRepositoryAddress(String repositoryAddress) {
 		this.repositoryAddress = repositoryAddress;
@@ -93,7 +103,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param userId the userId to set
+	 * @param userId
+	 *            the userId to set
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -107,7 +118,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param workspaceName the workspaceName to set
+	 * @param workspaceName
+	 *            the workspaceName to set
 	 */
 	public void setWorkspaceName(String workspaceName) {
 		this.workspaceName = workspaceName;
@@ -121,7 +133,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param workspaceUUID the workspaceUUID to set
+	 * @param workspaceUUID
+	 *            the workspaceUUID to set
 	 */
 	public void setWorkspaceUUID(String workspaceUUID) {
 		this.workspaceUUID = workspaceUUID;
@@ -135,7 +148,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param certificateFile the certificateFile to set
+	 * @param certificateFile
+	 *            the certificateFile to set
 	 */
 	public void setCertificateFile(String certificateFile) {
 		this.certificateFile = certificateFile;
@@ -149,7 +163,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param buildResultUUID the buildResultUUID to set
+	 * @param buildResultUUID
+	 *            the buildResultUUID to set
 	 */
 	public void setBuildResultUUID(String buildResultUUID) {
 		this.buildResultUUID = buildResultUUID;
@@ -163,7 +178,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param changeSetFile the changeSetFile to set
+	 * @param changeSetFile
+	 *            the changeSetFile to set
 	 */
 	public void setChangeSetFile(String changeSetFile) {
 		this.changeSetFile = changeSetFile;
@@ -177,7 +193,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param changesAcceptedProperty the changesAcceptedProperty to set
+	 * @param changesAcceptedProperty
+	 *            the changesAcceptedProperty to set
 	 */
 	public void setChangesAcceptedProperty(String changesAcceptedProperty) {
 		this.changesAcceptedProperty = changesAcceptedProperty;
@@ -191,7 +208,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param failOnError the failOnError to set
+	 * @param failOnError
+	 *            the failOnError to set
 	 */
 	public void setFailOnError(String failOnError) {
 		this.failOnError = failOnError;
@@ -205,7 +223,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param password the password to set
+	 * @param password
+	 *            the password to set
 	 */
 	public void setPassword(String password) {
 		this.password = password;
@@ -219,7 +238,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param passwordFile the passwordFile to set
+	 * @param passwordFile
+	 *            the passwordFile to set
 	 */
 	public void setPasswordFile(String passwordFile) {
 		this.passwordFile = passwordFile;
@@ -233,7 +253,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param repositoriesFile the repositoriesFile to set
+	 * @param repositoriesFile
+	 *            the repositoriesFile to set
 	 */
 	public void setRepositoriesFile(String repositoriesFile) {
 		this.repositoriesFile = repositoriesFile;
@@ -247,7 +268,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param smartCard the smartCard to set
+	 * @param smartCard
+	 *            the smartCard to set
 	 */
 	public void setSmartCard(String smartCard) {
 		this.smartCard = smartCard;
@@ -261,7 +283,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param snapshotName the snapshotName to set
+	 * @param snapshotName
+	 *            the snapshotName to set
 	 */
 	public void setSnapshotName(String snapshotName) {
 		this.snapshotName = snapshotName;
@@ -275,7 +298,8 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param snapshotUUIDProperty the snapshotUUIDProperty to set
+	 * @param snapshotUUIDProperty
+	 *            the snapshotUUIDProperty to set
 	 */
 	public void setSnapshotUUIDProperty(String snapshotUUIDProperty) {
 		this.snapshotUUIDProperty = snapshotUUIDProperty;
@@ -289,10 +313,11 @@ public class TeamAcceptTask extends BaseTask {
 	}
 
 	/**
-	 * @param verbose the verbose to set
+	 * @param verbose
+	 *            the verbose to set
 	 */
 	public void setVerbose(String verbose) {
 		this.verbose = verbose;
 	}
-	
+
 }

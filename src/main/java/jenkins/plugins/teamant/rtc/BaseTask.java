@@ -6,7 +6,6 @@ import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
 
-
 /**
  * Base task bean. Every Ant Task should implement the contained methods below.
  * The attributes of the implemented Ant Tasks should match exactly the ones
@@ -17,56 +16,61 @@ import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
  * 
  */
 public abstract class BaseTask {
-    
-    /**
-     * Get the respective IBM Ant Task tag (i.e. startBuildActivity).
-     * 
-     * @return IBM Ant Task tag.
-     */
-    public abstract String getTaskDefName();
-    
-    /**
-     * Get the respective IBM Ant Task classname (i.e.
-     * com.ibm.team.build.ant.task.StartBuildActivityTask).
-     * 
-     * @return IBM Ant Task classname.
-     */
-    public abstract String getTaskDefClassname();
-    
-    /**
-     * Evaluates the provided fields according to IBM Ant task rules. It checks
-     * for required fields and for existence of fields that shouldn't coexist
-     * (i.e. password and passwordFile).
-     * 
-     * @throws RTCMissingAttrException When one of the attributes is missing.
-     * @throws RTCConflictAttrException When some of the attributes are conflicting.
-     * @throws RTCDependentAttrException  When a provided attribute requires a missing one.
-     */
-    public abstract void eval() throws RTCMissingAttrException, RTCConflictAttrException, RTCDependentAttrException;
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-	
-	StringBuilder sbuild = new StringBuilder();
+	/**
+	 * Get the respective IBM Ant Task tag (i.e. startBuildActivity).
+	 * 
+	 * @return IBM Ant Task tag.
+	 */
+	public abstract String getTaskDefName();
 
-	// Add fields as attributes using reflection
-	Field[] fields = this.getClass().getDeclaredFields();
+	/**
+	 * Get the respective IBM Ant Task classname (i.e.
+	 * com.ibm.team.build.ant.task.StartBuildActivityTask).
+	 * 
+	 * @return IBM Ant Task classname.
+	 */
+	public abstract String getTaskDefClassname();
 
-	for (Field field : fields) {
-	    // Make private field accessible...
-	    field.setAccessible(true);
-	    try {
-		if (field.get(this) != null)
-		sbuild.append(field.getName() + ": " + String.valueOf(field.get(this)) + "\n");
-	    } catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
+	/**
+	 * Evaluates the provided fields according to IBM Ant task rules. It checks
+	 * for required fields and for existence of fields that shouldn't coexist
+	 * (i.e. password and passwordFile).
+	 * 
+	 * @throws RTCMissingAttrException
+	 *             When one of the attributes is missing.
+	 * @throws RTCConflictAttrException
+	 *             When some of the attributes are conflicting.
+	 * @throws RTCDependentAttrException
+	 *             When a provided attribute requires a missing one.
+	 */
+	public abstract void eval() throws RTCMissingAttrException,
+			RTCConflictAttrException, RTCDependentAttrException;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+
+		StringBuilder sbuild = new StringBuilder();
+
+		// Add fields as attributes using reflection
+		Field[] fields = this.getClass().getDeclaredFields();
+
+		for (Field field : fields) {
+			// Make private field accessible...
+			field.setAccessible(true);
+			try {
+				if (field.get(this) != null)
+					sbuild.append(field.getName() + ": "
+							+ String.valueOf(field.get(this)) + "\n");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return sbuild.toString();
 	}
-	
-	return sbuild.toString();
-    }
 }

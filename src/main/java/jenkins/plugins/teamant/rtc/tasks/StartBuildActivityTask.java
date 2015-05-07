@@ -4,252 +4,268 @@ import jenkins.plugins.teamant.rtc.BaseTask;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
 
-
 /**
  * @author rar6si
  *
  */
 public class StartBuildActivityTask extends BaseTask {
-    
-    // required fields
-    private String buildResultUUID;
-    private String repositoryAddress;
-    private String userId;
-    private String label;
-    
-    // non-required fields
-    private String activityIdProperty;
-    private String autoComplete;
-    private String certificateFile;
-    private String failOnError;
-    private String parentActivityID;
-    private String password;
-    private String passwordFile;
-    private String smartCard;
-    private String verbose;
-    
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTaskDefName() {
-    	return "startBuildActivity";
-    }
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTaskDefClassname() {
-    	return "com.ibm.team.build.ant.task.StartBuildActivityTask";
-    }
+	// required fields
+	private String buildResultUUID;
+	private String repositoryAddress;
+	private String userId;
+	private String label;
 
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
-	
+	// non-required fields
+	private String activityIdProperty;
+	private String autoComplete;
+	private String certificateFile;
+	private String failOnError;
+	private String parentActivityID;
+	private String password;
+	private String passwordFile;
+	private String smartCard;
+	private String verbose;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getTaskDefName() {
+		return "startBuildActivity";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getTaskDefClassname() {
+		return "com.ibm.team.build.ant.task.StartBuildActivityTask";
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
+
 		// validate required attributes
 		if (buildResultUUID == null)
-		    throw new RTCMissingAttrException(this.getClass(), "buildResultUUID");
+			throw new RTCMissingAttrException(this.getClass(),
+					"buildResultUUID");
 		if (repositoryAddress == null)
-		    throw new RTCMissingAttrException(this.getClass(), "repositoryAddress");
+			throw new RTCMissingAttrException(this.getClass(),
+					"repositoryAddress");
 		if (userId == null)
-		    throw new RTCMissingAttrException(this.getClass(), "userId");
+			throw new RTCMissingAttrException(this.getClass(), "userId");
 		if (label == null)
-		    throw new RTCMissingAttrException(this.getClass(), "label");
-		
+			throw new RTCMissingAttrException(this.getClass(), "label");
+
 		// validate password and password file
 		// either of them should be provided.
 		if (password == null && passwordFile == null)
-		    throw new RTCMissingAttrException(this.getClass(), "password", "passwordFile");
+			throw new RTCMissingAttrException(this.getClass(), "password",
+					"passwordFile");
 		// but not both at the same time
 		if (password != null && passwordFile != null)
-		    throw new RTCConflictAttrException(this.getClass(), "password", "passwordFile");
-	
-    }
+			throw new RTCConflictAttrException(this.getClass(), "password",
+					"passwordFile");
 
-    /**
-     * @return the buildResultUUID
-     */
-    public String getBuildResultUUID() {
-        return buildResultUUID;
-    }
+	}
 
-    /**
-     * @param buildResultUUID the buildResultUUID to set
-     */
-    public void setBuildResultUUID(String buildResultUUID) {
-        this.buildResultUUID = buildResultUUID;
-    }
+	/**
+	 * @return the buildResultUUID
+	 */
+	public String getBuildResultUUID() {
+		return buildResultUUID;
+	}
 
-    /**
-     * @return the repositoryAddress
-     */
-    public String getRepositoryAddress() {
-        return repositoryAddress;
-    }
+	/**
+	 * @param buildResultUUID
+	 *            the buildResultUUID to set
+	 */
+	public void setBuildResultUUID(String buildResultUUID) {
+		this.buildResultUUID = buildResultUUID;
+	}
 
-    /**
-     * @param repositoryAddress the repositoryAddress to set
-     */
-    public void setRepositoryAddress(String repositoryAddress) {
-        this.repositoryAddress = repositoryAddress;
-    }
+	/**
+	 * @return the repositoryAddress
+	 */
+	public String getRepositoryAddress() {
+		return repositoryAddress;
+	}
 
-    /**
-     * @return the userId
-     */
-    public String getUserId() {
-        return userId;
-    }
+	/**
+	 * @param repositoryAddress
+	 *            the repositoryAddress to set
+	 */
+	public void setRepositoryAddress(String repositoryAddress) {
+		this.repositoryAddress = repositoryAddress;
+	}
 
-    /**
-     * @param userId the userId to set
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	/**
+	 * @return the userId
+	 */
+	public String getUserId() {
+		return userId;
+	}
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
+	/**
+	 * @param userId
+	 *            the userId to set
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
 
-    /**
-     * @return the activityIdProperty
-     */
-    public String getActivityIdProperty() {
-        return activityIdProperty;
-    }
+	/**
+	 * @param label
+	 *            the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
-    /**
-     * @param activityIdProperty the activityIdProperty to set
-     */
-    public void setActivityIdProperty(String activityIdProperty) {
-        this.activityIdProperty = activityIdProperty;
-    }
+	/**
+	 * @return the activityIdProperty
+	 */
+	public String getActivityIdProperty() {
+		return activityIdProperty;
+	}
 
-    /**
-     * @return the autoComplete
-     */
-    public String getAutoComplete() {
-        return autoComplete;
-    }
+	/**
+	 * @param activityIdProperty
+	 *            the activityIdProperty to set
+	 */
+	public void setActivityIdProperty(String activityIdProperty) {
+		this.activityIdProperty = activityIdProperty;
+	}
 
-    /**
-     * @param autoComplete the autoComplete to set
-     */
-    public void setAutoComplete(String autoComplete) {
-        this.autoComplete = autoComplete;
-    }
+	/**
+	 * @return the autoComplete
+	 */
+	public String getAutoComplete() {
+		return autoComplete;
+	}
 
-    /**
-     * @return the certificateFile
-     */
-    public String getCertificateFile() {
-        return certificateFile;
-    }
+	/**
+	 * @param autoComplete
+	 *            the autoComplete to set
+	 */
+	public void setAutoComplete(String autoComplete) {
+		this.autoComplete = autoComplete;
+	}
 
-    /**
-     * @param certificateFile the certificateFile to set
-     */
-    public void setCertificateFile(String certificateFile) {
-        this.certificateFile = certificateFile;
-    }
+	/**
+	 * @return the certificateFile
+	 */
+	public String getCertificateFile() {
+		return certificateFile;
+	}
 
-    /**
-     * @return the failOnError
-     */
-    public String getFailOnError() {
-        return failOnError;
-    }
+	/**
+	 * @param certificateFile
+	 *            the certificateFile to set
+	 */
+	public void setCertificateFile(String certificateFile) {
+		this.certificateFile = certificateFile;
+	}
 
-    /**
-     * @param failOnError the failOnError to set
-     */
-    public void setFailOnError(String failOnError) {
-        this.failOnError = failOnError;
-    }
+	/**
+	 * @return the failOnError
+	 */
+	public String getFailOnError() {
+		return failOnError;
+	}
 
-    /**
-     * @return the parentActivityID
-     */
-    public String getParentActivityID() {
-        return parentActivityID;
-    }
+	/**
+	 * @param failOnError
+	 *            the failOnError to set
+	 */
+	public void setFailOnError(String failOnError) {
+		this.failOnError = failOnError;
+	}
 
-    /**
-     * @param parentActivityID the parentActivityID to set
-     */
-    public void setParentActivityID(String parentActivityID) {
-        this.parentActivityID = parentActivityID;
-    }
+	/**
+	 * @return the parentActivityID
+	 */
+	public String getParentActivityID() {
+		return parentActivityID;
+	}
 
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
+	/**
+	 * @param parentActivityID
+	 *            the parentActivityID to set
+	 */
+	public void setParentActivityID(String parentActivityID) {
+		this.parentActivityID = parentActivityID;
+	}
 
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
 
-    /**
-     * @return the passwordFile
-     */
-    public String getPasswordFile() {
-        return passwordFile;
-    }
+	/**
+	 * @param password
+	 *            the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    /**
-     * @param passwordFile the passwordFile to set
-     */
-    public void setPasswordFile(String passwordFile) {
-        this.passwordFile = passwordFile;
-    }
+	/**
+	 * @return the passwordFile
+	 */
+	public String getPasswordFile() {
+		return passwordFile;
+	}
 
-    /**
-     * @return the smartCard
-     */
-    public String getSmartCard() {
-        return smartCard;
-    }
+	/**
+	 * @param passwordFile
+	 *            the passwordFile to set
+	 */
+	public void setPasswordFile(String passwordFile) {
+		this.passwordFile = passwordFile;
+	}
 
-    /**
-     * @param smartCard the smartCard to set
-     */
-    public void setSmartCard(String smartCard) {
-        this.smartCard = smartCard;
-    }
+	/**
+	 * @return the smartCard
+	 */
+	public String getSmartCard() {
+		return smartCard;
+	}
 
-    /**
-     * @return the verbose
-     */
-    public String getVerbose() {
-        return verbose;
-    }
+	/**
+	 * @param smartCard
+	 *            the smartCard to set
+	 */
+	public void setSmartCard(String smartCard) {
+		this.smartCard = smartCard;
+	}
 
-    /**
-     * @param verbose the verbose to set
-     */
-    public void setVerbose(String verbose) {
-        this.verbose = verbose;
-    }
-    
+	/**
+	 * @return the verbose
+	 */
+	public String getVerbose() {
+		return verbose;
+	}
+
+	/**
+	 * @param verbose
+	 *            the verbose to set
+	 */
+	public void setVerbose(String verbose) {
+		this.verbose = verbose;
+	}
+
 }
