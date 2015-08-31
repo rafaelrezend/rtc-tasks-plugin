@@ -6,10 +6,13 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Result;
+import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
+import hudson.model.Run;
 import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
@@ -35,6 +38,7 @@ import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
 import jenkins.plugins.teamant.rtc.tasks.CompleteBuildActivityTask;
 import jenkins.plugins.teamant.rtc.tasks.StartBuildActivityTask;
+import jenkins.tasks.SimpleBuildStep;
 
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
@@ -46,7 +50,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * execution based on a defined condition.
  *
  */
-public class RTCBuildActivity extends Builder {
+public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 
 	private static final String PUBLISH_FILE_PREFIX = "rtcactivity_";
 	private String activityIdProperty;
@@ -100,6 +104,123 @@ public class RTCBuildActivity extends Builder {
 			enclosedSteps = new ArrayList<BuildStep>();
 		}
 		return enclosedSteps;
+	}
+	
+	@Override
+	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher,
+			TaskListener listener) throws InterruptedException, IOException {
+
+		// Obtain environment variables from Jenkins environment
+		EnvVars envs = run.getEnvironment(listener);
+		
+		String RTCBuildResultUUID = envs.get("RTCBuildResultUUID", "");
+
+		// Add an activity property ID identifier to connect the start and
+		// complete build activities
+		activityIdProperty = "RTCActivityId_" + System.currentTimeMillis();
+
+		// Get Ant executable path (String)
+		// If no Ant is provided, it isn't possible to run any IBM Ant Task!
+		String exe = getAntExe(launcher, listener, envs);
+		if (exe == null) {
+			// TODO Log issue here or inside the getAntExe method
+			run.setResult(Result.FAILURE);
+			return;
+		}
+		
+		// Create publisher script file. It will first hold the start activity
+		// then will be overwritten with the complete activity.
+		FilePath antScriptFilePath = new FilePath(workspace,
+				RTCBuildActivity.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
+
+		// Write the Start activity file into the Jenkins workspace.
+		try {
+			writeStartBuildActivityFile(RTCBuildResultUUID, envs,
+					antScriptFilePath);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Run first Ant Task
+		int exitcode = runCommand(launcher, listener, envs, exe,
+				antScriptFilePath);
+		if (exitcode != 0) {
+			// TODO: log?
+			// do something?
+		}
+		
+		// Regular expression that will extract the activityId provided by the
+		// StartBuildActivity task.
+		String regex = activityIdProperty + "=(.*?);";
+
+		// PARSE THE LATEST 5 LINES OF THE CONSOLE OUTPUT
+		// IMPORTANT: IT WILL ONLY PARSE THE LATEST 5 LINES!
+		String activityId = parseContent(
+				StringUtils.join(run.getLog(5).toArray()), regex);
+		
+		// Run inner build steps
+		boolean shouldContinue = true;
+		for (BuildStep buildStep : enclosedSteps) {
+			if (!shouldContinue) {
+				break;
+			}
+
+			// This works as a recursive call, because the RTCBuildActivity
+			// builder can have its own type as children.
+			// Therefore, the activityId above is rewritten after every
+			// iteration, to keep the consistency of who is the right father's
+			// ID.
+			// The ID should be written only when it isn't null.
+			if (activityId != null) {
+
+				// Get the RTC Team Build Action from the current build or a new
+				// one
+				RTCBuildActivityAction baAction = run
+						.getAction(RTCBuildActivityAction.class);
+				if (baAction == null)
+					baAction = new RTCBuildActivityAction();
+
+				// Add the action with the new parameters
+				run.replaceAction(baAction.merge(new RTCBuildActivityAction(
+						"RTCParentActivityId", activityId)));
+			}
+
+			// Check if build step is a SimpleBuildStep (Workflow)
+			if (buildStep instanceof SimpleBuildStep) {
+				// Run like a workflow
+				((SimpleBuildStep) buildStep).perform(run, workspace, launcher, listener);
+				shouldContinue = run.getResult().equals(Result.SUCCESS);
+			}
+			else {
+				// Run like a freestyle job (assume run is an AbstractBuild and listener is a BuildListener)
+				shouldContinue = buildStep.perform((AbstractBuild<?, ?>)run, launcher, (BuildListener)listener);
+			}
+			
+		}
+		
+		// Replace the previous action with an empty one.
+		run.replaceAction(new RTCBuildActivityAction());
+
+		try {
+			writeCompleteBuildActivityFile(RTCBuildResultUUID, envs,
+					antScriptFilePath, activityId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Run closing Ant Task. Make sure the starting task worked.
+		if (exitcode == 0) {
+			exitcode = runCommand(launcher, listener, envs, exe,
+					antScriptFilePath);
+			if (exitcode != 0) {
+				// TODO: log?
+				// do something?
+				// delete file?
+			}
+		}
+		
 	}
 
 	@SuppressWarnings("deprecation")
@@ -221,7 +342,7 @@ public class RTCBuildActivity extends Builder {
 	}
 
 	private int runCommand(final Launcher launcher,
-			final BuildListener listener, EnvVars envs, String exe,
+			final TaskListener listener, EnvVars envs, String exe,
 			FilePath scriptFilePath) throws IOException, InterruptedException {
 
 		// Create command
@@ -434,4 +555,5 @@ public class RTCBuildActivity extends Builder {
 		}
 
 	}
+
 }
