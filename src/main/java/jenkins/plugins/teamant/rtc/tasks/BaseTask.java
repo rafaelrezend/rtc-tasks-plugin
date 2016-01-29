@@ -1,4 +1,4 @@
-package jenkins.plugins.teamant.rtc;
+package jenkins.plugins.teamant.rtc.tasks;
 
 import java.lang.reflect.Field;
 

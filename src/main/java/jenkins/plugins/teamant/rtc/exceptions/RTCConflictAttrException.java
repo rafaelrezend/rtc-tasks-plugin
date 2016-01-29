@@ -1,6 +1,6 @@
 package jenkins.plugins.teamant.rtc.exceptions;
 
-import jenkins.plugins.teamant.rtc.BaseTask;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 /**
  * Exception when the ANT Task evaluation fails due to conflicts resulting from

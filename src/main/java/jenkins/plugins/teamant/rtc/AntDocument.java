@@ -16,6 +16,7 @@ import javax.xml.transform.stream.StreamResult;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

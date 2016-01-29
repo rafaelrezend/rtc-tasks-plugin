@@ -1,12 +1,12 @@
 /**
  * 
  */
-package jenkins.plugins.teamant.rtc.tasks;
+package jenkins.plugins.teamant.rtc.tasks.impl;
 
-import jenkins.plugins.teamant.rtc.BaseTask;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 /**
  * @author rafaelrezende

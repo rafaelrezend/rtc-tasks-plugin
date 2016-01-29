@@ -36,8 +36,8 @@ import jenkins.plugins.teamant.rtc.AntDocument;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
-import jenkins.plugins.teamant.rtc.tasks.CompleteBuildActivityTask;
-import jenkins.plugins.teamant.rtc.tasks.StartBuildActivityTask;
+import jenkins.plugins.teamant.rtc.tasks.impl.CompleteBuildActivityTask;
+import jenkins.plugins.teamant.rtc.tasks.impl.StartBuildActivityTask;
 import jenkins.tasks.SimpleBuildStep;
 
 import org.apache.commons.lang.StringUtils;
@@ -247,10 +247,10 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 		// Create publisher script file. It will first hold the start activity
 		// then will be overwritten with the complete activity.
 		FilePath antScriptFilePath = new FilePath(build.getWorkspace(),
-				RTCBuildActivity.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID"));
+				RTCBuildActivity.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID") + ".xml");
 
+		// Resolve input BuildResultUUID in case it comes from the environment variable.
 		String resolvedBuildResultUUID = "";
-
 		try {
 			resolvedBuildResultUUID = TokenMacro.expandAll(build, listener,
 					getBuildResultUUID());
@@ -268,12 +268,14 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 			e.printStackTrace();
 		}
 
-		// Run first Ant Task
+		// Run first Ant Task to start the Build Activity
 		int exitcode = runCommand(launcher, listener, envs, exe,
 				antScriptFilePath);
 		if (exitcode != 0) {
 			// TODO: log?
 			// do something?
+			// needs to decide what happens when the script itself fails. It could be because of server not available, wrong credentials etc.
+			// remember to stop the process here!!!
 		}
 
 		// Regular expression that will extract the activityId provided by the
@@ -285,10 +287,12 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 		String activityId = parseContent(
 				StringUtils.join(build.getLog(5).toArray()), regex);
 
-		// Run inner build steps
+		// Run inner build steps until one of them eventually fail.
 		boolean shouldContinue = true;
 		for (BuildStep buildStep : enclosedSteps) {
+			
 			if (!shouldContinue) {
+				// Ops! One of the internal build steps failed.
 				break;
 			}
 
@@ -335,13 +339,14 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 				// TODO: log?
 				// do something?
 				// delete file?
+				// same as opening!
 			}
 		}
 
 		return shouldContinue;
 	}
 
-	private int runCommand(final Launcher launcher,
+	private static int runCommand(final Launcher launcher,
 			final TaskListener listener, EnvVars envs, String exe,
 			FilePath scriptFilePath) throws IOException, InterruptedException {
 
@@ -434,7 +439,7 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 	}
 
 	private String getAntExe(final Launcher launcher,
-			final BuildListener listener, EnvVars envs) throws IOException,
+			final TaskListener listener, EnvVars envs) throws IOException,
 			InterruptedException {
 		// Retrieve Ant installation
 		Ant.AntInstallation ai = getAnt();

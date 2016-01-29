@@ -1,29 +1,32 @@
-package jenkins.plugins.teamant.rtc.tasks;
+package jenkins.plugins.teamant.rtc.tasks.impl;
 
-import jenkins.plugins.teamant.rtc.BaseTask;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
+import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 /**
  * @author rar6si
  *
  */
-public class StartBuildActivityTask extends BaseTask {
+public class StartTeamBuildTask extends BaseTask {
 
 	// required fields
-	private String buildResultUUID;
 	private String repositoryAddress;
+	private String resultUUIDProperty;
 	private String userId;
-	private String label;
 
 	// non-required fields
-	private String activityIdProperty;
 	private String autoComplete;
+	private String buildDefinitionId;
 	private String certificateFile;
+	private String engineId;
 	private String failOnError;
-	private String parentActivityID;
+	private String label;
 	private String password;
 	private String passwordFile;
+	private String requestUUID;
+	private String resultUUIDFile;
 	private String smartCard;
 	private String verbose;
 
@@ -32,7 +35,7 @@ public class StartBuildActivityTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefName() {
-		return "startBuildActivity";
+		return "startTeamBuild";
 	}
 
 	/**
@@ -40,26 +43,36 @@ public class StartBuildActivityTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefClassname() {
-		return "com.ibm.team.build.ant.task.StartBuildActivityTask";
+		return "com.ibm.team.build.ant.task.StartBuildTask";
 	}
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws RTCDependentAttrException
 	 */
 	@Override
-	public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
+	public void eval() throws RTCMissingAttrException,
+			RTCConflictAttrException, RTCDependentAttrException {
+
+		// either buildDefinitionId or requestUUID must be given...
+		if (buildDefinitionId == null && requestUUID == null)
+			throw new RTCMissingAttrException(this.getClass(),
+					"buildDefinitionId", "requestUUID");
+		// ... but not both.
+		if (buildDefinitionId != null && requestUUID != null)
+			throw new RTCConflictAttrException(this.getClass(),
+					"buildDefinitionId", "requestUUID");
 
 		// validate required attributes
-		if (buildResultUUID == null)
-			throw new RTCMissingAttrException(this.getClass(),
-					"buildResultUUID");
 		if (repositoryAddress == null)
 			throw new RTCMissingAttrException(this.getClass(),
 					"repositoryAddress");
+		if (resultUUIDProperty == null)
+			throw new RTCMissingAttrException(this.getClass(),
+					"resultUUIDProperty");
 		if (userId == null)
 			throw new RTCMissingAttrException(this.getClass(), "userId");
-		if (label == null)
-			throw new RTCMissingAttrException(this.getClass(), "label");
 
 		// validate password and password file
 		// either of them should be provided.
@@ -71,21 +84,11 @@ public class StartBuildActivityTask extends BaseTask {
 			throw new RTCConflictAttrException(this.getClass(), "password",
 					"passwordFile");
 
-	}
+		// engineId attribute is only allowed if buildDefinitionId is provided.
+		if (engineId != null && buildDefinitionId == null)
+			throw new RTCDependentAttrException(this.getClass(), "engineId",
+					"buildDefinitionId");
 
-	/**
-	 * @return the buildResultUUID
-	 */
-	public String getBuildResultUUID() {
-		return buildResultUUID;
-	}
-
-	/**
-	 * @param buildResultUUID
-	 *            the buildResultUUID to set
-	 */
-	public void setBuildResultUUID(String buildResultUUID) {
-		this.buildResultUUID = buildResultUUID;
 	}
 
 	/**
@@ -104,6 +107,21 @@ public class StartBuildActivityTask extends BaseTask {
 	}
 
 	/**
+	 * @return the resultUUIDProperty
+	 */
+	public String getResultUUIDProperty() {
+		return resultUUIDProperty;
+	}
+
+	/**
+	 * @param resultUUIDProperty
+	 *            the resultUUIDProperty to set
+	 */
+	public void setResultUUIDProperty(String resultUUIDProperty) {
+		this.resultUUIDProperty = resultUUIDProperty;
+	}
+
+	/**
 	 * @return the userId
 	 */
 	public String getUserId() {
@@ -116,36 +134,6 @@ public class StartBuildActivityTask extends BaseTask {
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
-
-	/**
-	 * @param label
-	 *            the label to set
-	 */
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the activityIdProperty
-	 */
-	public String getActivityIdProperty() {
-		return activityIdProperty;
-	}
-
-	/**
-	 * @param activityIdProperty
-	 *            the activityIdProperty to set
-	 */
-	public void setActivityIdProperty(String activityIdProperty) {
-		this.activityIdProperty = activityIdProperty;
 	}
 
 	/**
@@ -164,6 +152,21 @@ public class StartBuildActivityTask extends BaseTask {
 	}
 
 	/**
+	 * @return the buildDefinitionId
+	 */
+	public String getBuildDefinitionId() {
+		return buildDefinitionId;
+	}
+
+	/**
+	 * @param buildDefinitionId
+	 *            the buildDefinitionId to set
+	 */
+	public void setBuildDefinitionId(String buildDefinitionId) {
+		this.buildDefinitionId = buildDefinitionId;
+	}
+
+	/**
 	 * @return the certificateFile
 	 */
 	public String getCertificateFile() {
@@ -176,6 +179,21 @@ public class StartBuildActivityTask extends BaseTask {
 	 */
 	public void setCertificateFile(String certificateFile) {
 		this.certificateFile = certificateFile;
+	}
+
+	/**
+	 * @return the engineId
+	 */
+	public String getEngineId() {
+		return engineId;
+	}
+
+	/**
+	 * @param engineId
+	 *            the engineId to set
+	 */
+	public void setEngineId(String engineId) {
+		this.engineId = engineId;
 	}
 
 	/**
@@ -194,18 +212,18 @@ public class StartBuildActivityTask extends BaseTask {
 	}
 
 	/**
-	 * @return the parentActivityID
+	 * @return the label
 	 */
-	public String getParentActivityID() {
-		return parentActivityID;
+	public String getLabel() {
+		return label;
 	}
 
 	/**
-	 * @param parentActivityID
-	 *            the parentActivityID to set
+	 * @param label
+	 *            the label to set
 	 */
-	public void setParentActivityID(String parentActivityID) {
-		this.parentActivityID = parentActivityID;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	/**
@@ -236,6 +254,36 @@ public class StartBuildActivityTask extends BaseTask {
 	 */
 	public void setPasswordFile(String passwordFile) {
 		this.passwordFile = passwordFile;
+	}
+
+	/**
+	 * @return the requestUUID
+	 */
+	public String getRequestUUID() {
+		return requestUUID;
+	}
+
+	/**
+	 * @param requestUUID
+	 *            the requestUUID to set
+	 */
+	public void setRequestUUID(String requestUUID) {
+		this.requestUUID = requestUUID;
+	}
+
+	/**
+	 * @return the resultUUIDFile
+	 */
+	public String getResultUUIDFile() {
+		return resultUUIDFile;
+	}
+
+	/**
+	 * @param resultUUIDFile
+	 *            the resultUUIDFile to set
+	 */
+	public void setResultUUIDFile(String resultUUIDFile) {
+		this.resultUUIDFile = resultUUIDFile;
 	}
 
 	/**

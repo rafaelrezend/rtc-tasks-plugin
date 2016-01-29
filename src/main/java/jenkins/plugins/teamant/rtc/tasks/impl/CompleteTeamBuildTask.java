@@ -1,27 +1,29 @@
-package jenkins.plugins.teamant.rtc.tasks;
+package jenkins.plugins.teamant.rtc.tasks.impl;
 
-import jenkins.plugins.teamant.rtc.BaseTask;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
+import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 /**
  * @author rar6si
  *
  */
-public class CompleteBuildActivityTask extends BaseTask {
+public class CompleteTeamBuildTask extends BaseTask {
 
 	// required fields
-	private String activityId;
 	private String buildResultUUID;
 	private String repositoryAddress;
 	private String userId;
 
 	// non-required fields
+	private String buildNotNecessary;
 	private String certificateFile;
 	private String failOnError;
 	private String password;
 	private String passwordFile;
 	private String smartCard;
+	private String status;
 	private String verbose;
 
 	/**
@@ -29,7 +31,7 @@ public class CompleteBuildActivityTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefName() {
-		return "completeBuildActivity";
+		return "completeTeamBuild";
 	}
 
 	/**
@@ -37,18 +39,19 @@ public class CompleteBuildActivityTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefClassname() {
-		return "com.ibm.team.build.ant.task.CompleteBuildActivityTask";
+		return "com.ibm.team.build.ant.task.CompleteBuildTask";
 	}
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @throws RTCDependentAttrException
 	 */
 	@Override
-	public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
+	public void eval() throws RTCMissingAttrException,
+			RTCConflictAttrException, RTCDependentAttrException {
 
 		// validate required attributes
-		if (activityId == null)
-			throw new RTCMissingAttrException(this.getClass(), "activityId");
 		if (buildResultUUID == null)
 			throw new RTCMissingAttrException(this.getClass(),
 					"buildResultUUID");
@@ -68,21 +71,6 @@ public class CompleteBuildActivityTask extends BaseTask {
 			throw new RTCConflictAttrException(this.getClass(), "password",
 					"passwordFile");
 
-	}
-
-	/**
-	 * @return the activityId
-	 */
-	public String getActivityId() {
-		return activityId;
-	}
-
-	/**
-	 * @param activityId
-	 *            the activityId to set
-	 */
-	public void setActivityId(String activityId) {
-		this.activityId = activityId;
 	}
 
 	/**
@@ -128,6 +116,21 @@ public class CompleteBuildActivityTask extends BaseTask {
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	/**
+	 * @return the buildNotNecessary
+	 */
+	public String getBuildNotNecessary() {
+		return buildNotNecessary;
+	}
+
+	/**
+	 * @param buildNotNecessary
+	 *            the buildNotNecessary to set
+	 */
+	public void setBuildNotNecessary(String buildNotNecessary) {
+		this.buildNotNecessary = buildNotNecessary;
 	}
 
 	/**
@@ -203,6 +206,21 @@ public class CompleteBuildActivityTask extends BaseTask {
 	 */
 	public void setSmartCard(String smartCard) {
 		this.smartCard = smartCard;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	/**

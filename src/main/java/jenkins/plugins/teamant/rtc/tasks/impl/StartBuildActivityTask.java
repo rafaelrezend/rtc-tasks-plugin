@@ -1,29 +1,30 @@
-package jenkins.plugins.teamant.rtc.tasks;
+package jenkins.plugins.teamant.rtc.tasks.impl;
 
-import jenkins.plugins.teamant.rtc.BaseTask;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
-import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
+import jenkins.plugins.teamant.rtc.tasks.BaseTask;
 
 /**
  * @author rar6si
  *
  */
-public class CompleteTeamBuildTask extends BaseTask {
+public class StartBuildActivityTask extends BaseTask {
 
 	// required fields
 	private String buildResultUUID;
 	private String repositoryAddress;
 	private String userId;
+	private String label;
 
 	// non-required fields
-	private String buildNotNecessary;
+	private String activityIdProperty;
+	private String autoComplete;
 	private String certificateFile;
 	private String failOnError;
+	private String parentActivityID;
 	private String password;
 	private String passwordFile;
 	private String smartCard;
-	private String status;
 	private String verbose;
 
 	/**
@@ -31,7 +32,7 @@ public class CompleteTeamBuildTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefName() {
-		return "completeTeamBuild";
+		return "startBuildActivity";
 	}
 
 	/**
@@ -39,17 +40,14 @@ public class CompleteTeamBuildTask extends BaseTask {
 	 */
 	@Override
 	public String getTaskDefClassname() {
-		return "com.ibm.team.build.ant.task.CompleteBuildTask";
+		return "com.ibm.team.build.ant.task.StartBuildActivityTask";
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @throws RTCDependentAttrException
 	 */
 	@Override
-	public void eval() throws RTCMissingAttrException,
-			RTCConflictAttrException, RTCDependentAttrException {
+	public void eval() throws RTCMissingAttrException, RTCConflictAttrException {
 
 		// validate required attributes
 		if (buildResultUUID == null)
@@ -60,6 +58,8 @@ public class CompleteTeamBuildTask extends BaseTask {
 					"repositoryAddress");
 		if (userId == null)
 			throw new RTCMissingAttrException(this.getClass(), "userId");
+		if (label == null)
+			throw new RTCMissingAttrException(this.getClass(), "label");
 
 		// validate password and password file
 		// either of them should be provided.
@@ -119,18 +119,48 @@ public class CompleteTeamBuildTask extends BaseTask {
 	}
 
 	/**
-	 * @return the buildNotNecessary
+	 * @return the label
 	 */
-	public String getBuildNotNecessary() {
-		return buildNotNecessary;
+	public String getLabel() {
+		return label;
 	}
 
 	/**
-	 * @param buildNotNecessary
-	 *            the buildNotNecessary to set
+	 * @param label
+	 *            the label to set
 	 */
-	public void setBuildNotNecessary(String buildNotNecessary) {
-		this.buildNotNecessary = buildNotNecessary;
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the activityIdProperty
+	 */
+	public String getActivityIdProperty() {
+		return activityIdProperty;
+	}
+
+	/**
+	 * @param activityIdProperty
+	 *            the activityIdProperty to set
+	 */
+	public void setActivityIdProperty(String activityIdProperty) {
+		this.activityIdProperty = activityIdProperty;
+	}
+
+	/**
+	 * @return the autoComplete
+	 */
+	public String getAutoComplete() {
+		return autoComplete;
+	}
+
+	/**
+	 * @param autoComplete
+	 *            the autoComplete to set
+	 */
+	public void setAutoComplete(String autoComplete) {
+		this.autoComplete = autoComplete;
 	}
 
 	/**
@@ -161,6 +191,21 @@ public class CompleteTeamBuildTask extends BaseTask {
 	 */
 	public void setFailOnError(String failOnError) {
 		this.failOnError = failOnError;
+	}
+
+	/**
+	 * @return the parentActivityID
+	 */
+	public String getParentActivityID() {
+		return parentActivityID;
+	}
+
+	/**
+	 * @param parentActivityID
+	 *            the parentActivityID to set
+	 */
+	public void setParentActivityID(String parentActivityID) {
+		this.parentActivityID = parentActivityID;
 	}
 
 	/**
@@ -206,21 +251,6 @@ public class CompleteTeamBuildTask extends BaseTask {
 	 */
 	public void setSmartCard(String smartCard) {
 		this.smartCard = smartCard;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status
-	 *            the status to set
-	 */
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	/**

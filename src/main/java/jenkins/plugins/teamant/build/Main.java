@@ -11,8 +11,8 @@ import jenkins.plugins.teamant.rtc.AntDocument;
 import jenkins.plugins.teamant.rtc.exceptions.RTCConflictAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCDependentAttrException;
 import jenkins.plugins.teamant.rtc.exceptions.RTCMissingAttrException;
-import jenkins.plugins.teamant.rtc.tasks.CompleteBuildActivityTask;
-import jenkins.plugins.teamant.rtc.tasks.StartBuildActivityTask;
+import jenkins.plugins.teamant.rtc.tasks.impl.CompleteBuildActivityTask;
+import jenkins.plugins.teamant.rtc.tasks.impl.StartBuildActivityTask;
 
 import org.w3c.dom.DOMException;
 
