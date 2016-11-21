@@ -12,6 +12,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
+import hudson.model.Node;
 import hudson.model.Run;
 import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepDescriptor;
@@ -20,6 +21,7 @@ import hudson.tasks.Ant;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
+
+import com.ibm.team.build.internal.hjplugin.RTCBuildToolInstallation;
 
 /**
  * A buildstep wrapping any number of other buildsteps, controlling their
@@ -109,11 +113,26 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 	@Override
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher,
 			TaskListener listener) throws InterruptedException, IOException {
+		
+		// TODO TEST
+		Node node = workspace.toComputer().getNode();
+		// Get the build toolkit on the node where the checkout is happening.
+		String nodeBuildToolkit = getDescriptor().getBuildToolkit("RTC BT 6.0", node, listener);
+		// END TEST
+		
+		PrintStream logger = listener.getLogger();
+		
+		logger.println("##### Perform RTCBuildActivity");
 
 		// Obtain environment variables from Jenkins environment
 		EnvVars envs = run.getEnvironment(listener);
 		
 		String RTCBuildResultUUID = envs.get("RTCBuildResultUUID", "");
+		
+		// TODO
+		envs.put("RTCBuildToolkit", nodeBuildToolkit);
+		envs.put("userId", "rezende");
+		envs.put("password", "rezende");
 
 		// Add an activity property ID identifier to connect the start and
 		// complete build activities
@@ -223,128 +242,128 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 		
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public boolean perform(final AbstractBuild<?, ?> build,
-			final Launcher launcher, final BuildListener listener)
-			throws InterruptedException, IOException {
-
-		// Obtain environment variables from Jenkins environment
-		EnvVars envs = build.getEnvironment(listener);
-
-		// Add an activity property ID identifier to connect the start and
-		// complete build activities
-		activityIdProperty = "RTCActivityId_" + System.currentTimeMillis();
-
-		// Get Ant executable path (String)
-		// If no Ant is provided, it isn't possible to run any IBM Ant Task!
-		String exe = getAntExe(launcher, listener, envs);
-		if (exe == null) {
-			// TODO Log issue here or inside the getAntExe method
-			return false;
-		}
-
-		// Create publisher script file. It will first hold the start activity
-		// then will be overwritten with the complete activity.
-		FilePath antScriptFilePath = new FilePath(build.getWorkspace(),
-				RTCBuildActivity.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID") + ".xml");
-
-		// Resolve input BuildResultUUID in case it comes from the environment variable.
-		String resolvedBuildResultUUID = "";
-		try {
-			resolvedBuildResultUUID = TokenMacro.expandAll(build, listener,
-					getBuildResultUUID());
-		} catch (MacroEvaluationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		// Write the Start activity file into the Jenkins workspace.
-		try {
-			writeStartBuildActivityFile(resolvedBuildResultUUID, envs,
-					antScriptFilePath);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Run first Ant Task to start the Build Activity
-		int exitcode = runCommand(launcher, listener, envs, exe,
-				antScriptFilePath);
-		if (exitcode != 0) {
-			// TODO: log?
-			// do something?
-			// needs to decide what happens when the script itself fails. It could be because of server not available, wrong credentials etc.
-			// remember to stop the process here!!!
-		}
-
-		// Regular expression that will extract the activityId provided by the
-		// StartBuildActivity task.
-		String regex = activityIdProperty + "=(.*?);";
-
-		// PARSE THE LATEST 5 LINES OF THE CONSOLE OUTPUT
-		// IMPORTANT: IT WILL ONLY PARSE THE LATEST 5 LINES!
-		String activityId = parseContent(
-				StringUtils.join(build.getLog(5).toArray()), regex);
-
-		// Run inner build steps until one of them eventually fail.
-		boolean shouldContinue = true;
-		for (BuildStep buildStep : enclosedSteps) {
-			
-			if (!shouldContinue) {
-				// Ops! One of the internal build steps failed.
-				break;
-			}
-
-			// This works as a recursive call, because the RTCBuildActivity
-			// builder can have its own type as children.
-			// Therefore, the activityId above is rewritten after every
-			// iteration, to keep the consistency of who is the right father's
-			// ID.
-			// The ID should be written only when it isn't null.
-			if (activityId != null) {
-
-				// Get the RTC Team Build Action from the current build or a new
-				// one
-				RTCBuildActivityAction baAction = build
-						.getAction(RTCBuildActivityAction.class);
-				if (baAction == null)
-					baAction = new RTCBuildActivityAction();
-
-				// Add the action with the new parameters
-				build.replaceAction(baAction.merge(new RTCBuildActivityAction(
-						"RTCParentActivityId", activityId)));
-			}
-
-			// TODO Update the
-			shouldContinue = buildStep.perform(build, launcher, listener);
-		}
-
-		// Replace the previous action with an empty one.
-		build.replaceAction(new RTCBuildActivityAction());
-
-		try {
-			writeCompleteBuildActivityFile(resolvedBuildResultUUID, envs,
-					antScriptFilePath, activityId);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Run closing Ant Task. Make sure the starting task worked.
-		if (exitcode == 0) {
-			exitcode = runCommand(launcher, listener, envs, exe,
-					antScriptFilePath);
-			if (exitcode != 0) {
-				// TODO: log?
-				// do something?
-				// delete file?
-				// same as opening!
-			}
-		}
-
-		return shouldContinue;
-	}
+//	@SuppressWarnings("deprecation")
+//	@Override
+//	public boolean perform(final AbstractBuild<?, ?> build,
+//			final Launcher launcher, final BuildListener listener)
+//			throws InterruptedException, IOException {
+//
+//		// Obtain environment variables from Jenkins environment
+//		EnvVars envs = build.getEnvironment(listener);
+//
+//		// Add an activity property ID identifier to connect the start and
+//		// complete build activities
+//		activityIdProperty = "RTCActivityId_" + System.currentTimeMillis();
+//
+//		// Get Ant executable path (String)
+//		// If no Ant is provided, it isn't possible to run any IBM Ant Task!
+//		String exe = getAntExe(launcher, listener, envs);
+//		if (exe == null) {
+//			// TODO Log issue here or inside the getAntExe method
+//			return false;
+//		}
+//
+//		// Create publisher script file. It will first hold the start activity
+//		// then will be overwritten with the complete activity.
+//		FilePath antScriptFilePath = new FilePath(build.getWorkspace(),
+//				RTCBuildActivity.PUBLISH_FILE_PREFIX + envs.get("BUILD_ID") + ".xml");
+//
+//		// Resolve input BuildResultUUID in case it comes from the environment variable.
+//		String resolvedBuildResultUUID = "";
+//		try {
+//			resolvedBuildResultUUID = TokenMacro.expandAll(build, listener,
+//					getBuildResultUUID());
+//		} catch (MacroEvaluationException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//
+//		// Write the Start activity file into the Jenkins workspace.
+//		try {
+//			writeStartBuildActivityFile(resolvedBuildResultUUID, envs,
+//					antScriptFilePath);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		// Run first Ant Task to start the Build Activity
+//		int exitcode = runCommand(launcher, listener, envs, exe,
+//				antScriptFilePath);
+//		if (exitcode != 0) {
+//			// TODO: log?
+//			// do something?
+//			// needs to decide what happens when the script itself fails. It could be because of server not available, wrong credentials etc.
+//			// remember to stop the process here!!!
+//		}
+//
+//		// Regular expression that will extract the activityId provided by the
+//		// StartBuildActivity task.
+//		String regex = activityIdProperty + "=(.*?);";
+//
+//		// PARSE THE LATEST 5 LINES OF THE CONSOLE OUTPUT
+//		// IMPORTANT: IT WILL ONLY PARSE THE LATEST 5 LINES!
+//		String activityId = parseContent(
+//				StringUtils.join(build.getLog(5).toArray()), regex);
+//
+//		// Run inner build steps until one of them eventually fail.
+//		boolean shouldContinue = true;
+//		for (BuildStep buildStep : enclosedSteps) {
+//			
+//			if (!shouldContinue) {
+//				// Ops! One of the internal build steps failed.
+//				break;
+//			}
+//
+//			// This works as a recursive call, because the RTCBuildActivity
+//			// builder can have its own type as children.
+//			// Therefore, the activityId above is rewritten after every
+//			// iteration, to keep the consistency of who is the right father's
+//			// ID.
+//			// The ID should be written only when it isn't null.
+//			if (activityId != null) {
+//
+//				// Get the RTC Team Build Action from the current build or a new
+//				// one
+//				RTCBuildActivityAction baAction = build
+//						.getAction(RTCBuildActivityAction.class);
+//				if (baAction == null)
+//					baAction = new RTCBuildActivityAction();
+//
+//				// Add the action with the new parameters
+//				build.replaceAction(baAction.merge(new RTCBuildActivityAction(
+//						"RTCParentActivityId", activityId)));
+//			}
+//
+//			// TODO Update the
+//			shouldContinue = buildStep.perform(build, launcher, listener);
+//		}
+//
+//		// Replace the previous action with an empty one.
+//		build.replaceAction(new RTCBuildActivityAction());
+//
+//		try {
+//			writeCompleteBuildActivityFile(resolvedBuildResultUUID, envs,
+//					antScriptFilePath, activityId);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		// Run closing Ant Task. Make sure the starting task worked.
+//		if (exitcode == 0) {
+//			exitcode = runCommand(launcher, listener, envs, exe,
+//					antScriptFilePath);
+//			if (exitcode != 0) {
+//				// TODO: log?
+//				// do something?
+//				// delete file?
+//				// same as opening!
+//			}
+//		}
+//
+//		return shouldContinue;
+//	}
 
 	private static int runCommand(final Launcher launcher,
 			final TaskListener listener, EnvVars envs, String exe,
@@ -493,10 +512,33 @@ public class RTCBuildActivity extends Builder implements SimpleBuildStep {
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
 	}
-
+	
 	@Extension
 	public static final class DescriptorImpl extends
 			BuildStepDescriptor<Builder> {
+		
+		// TEST
+		/**
+		 * For a given build tool on a given node, resolve what directory is expected to contains the build toolkit.
+		 * Jenkins provides tool installation abilities as well as a way of describing where a tool is located on 
+		 * as Slave. We will delegate the path resolution to Jenkins.
+		 * @param buildTool The build tool that we want the path for
+		 * @param node The node (Master or a particular slave) the build toolkit will used on. 
+		 * @param listener Listener to log any problems encountered.
+		 * @return Path to the Build Toolkit directory
+		 * @throws IOException
+		 * @throws InterruptedException
+		 */
+		private String getBuildToolkit(String buildTool, Node node, TaskListener listener) throws IOException, InterruptedException {
+	        RTCBuildToolInstallation[] installations = RTCBuildToolInstallation.allInstallations();
+	        for (RTCBuildToolInstallation buildToolIntallation : installations) {
+	        	if (buildToolIntallation.getName().equals(buildTool)) {
+	        		return buildToolIntallation.forNode(node, listener).getHome();
+	        	}
+	        }
+			return null;
+		}
+		// END TEST
 
 		@CopyOnWrite
 		private volatile Ant.AntInstallation[] installations = new Ant.AntInstallation[0];
